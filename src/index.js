@@ -2,13 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { FlightProvider } from './context/FlightContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+//wrap App in provider
 root.render(
-  <React.StrictMode>
+  <FlightProvider>
     <App />
-  </React.StrictMode>
+  </FlightProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
