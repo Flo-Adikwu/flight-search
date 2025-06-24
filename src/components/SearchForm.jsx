@@ -9,7 +9,6 @@ import {
   CircularProgress,
   FormControl,
   RadioGroup,
-  FormLabel,
   Radio,
   FormControlLabel,
 } from "@mui/material";
@@ -101,6 +100,7 @@ const SearchForm = () => {
           );
         }
         setFlightData(results);
+        localStorage.removeItem("flightData");
       }
     } catch (err) {
       console.error("Flight search error:", err);

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import {
   Table,
   TableHead,
@@ -10,6 +10,7 @@ import {
   TableContainer,
   TableBody,
   Paper,
+  Pagination,
 } from "@mui/material";
 import { FlightContext } from "../context/FlightContext";
 import moment from "moment";
@@ -17,7 +18,26 @@ import { getFlightDuration } from "../utils/getFlightDuration";
 
 const SearchResults = () => {
   const { flightData, loading, error } = useContext(FlightContext);
-  const flights = flightData || [];
+  const [currentPage, setCurrentPage] = useState(1);
+  const resultsPerPage = 5;
+  const flights = useMemo(() => flightData || [], [flightData]);
+  const totalPages = Math.ceil(flights.length / resultsPerPage);
+
+  //reset page to 1 when page loads
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [flightData]);
+
+  const paginatedFlightList = useMemo(() => {
+    return flights.slice(
+      (currentPage - 1) * resultsPerPage,
+      currentPage * resultsPerPage
+    );
+  }, [flights, currentPage]);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
   if (loading) {
     return (
@@ -80,7 +100,7 @@ const SearchResults = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {flights.map((flight, i) => {
+            {paginatedFlightList.map((flight, i) => {
               const leg = flight.legs?.[0] || {};
               const departure = moment(leg.departure);
               const arrival = moment(leg.arrival);
@@ -152,6 +172,17 @@ const SearchResults = () => {
             })}
           </TableBody>
         </Table>
+        {totalPages > 1 && (
+          <Box display="flex" justifyContent="" mt={3}>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(event, value) => handlePageChange(event, value)}
+              variant="outlined"
+              color="primary"
+            />
+          </Box>
+        )}
       </TableContainer>
     </>
   );
