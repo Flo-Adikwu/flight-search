@@ -21,6 +21,9 @@ const SearchForm = () => {
   const [tripType, setTripType] = useState("oneway");
   const [returnDate, setReturndate] = useState("");
 
+  const [maxStops, setMaxStops] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+
   const [originOptions, setOriginOptions] = useState([]);
   const [destinationOptions, setDestinationOptions] = useState([]);
 
@@ -84,7 +87,20 @@ const SearchForm = () => {
         setError("No flights found");
         setFlightData([]); // clear previous results
       } else {
-        setFlightData(flights);
+        let results = flights;
+        if (maxStops !== "") {
+          results = results.filter(
+            (flight) => flight.legs?.[0]?.stopCount <= parseInt(maxStops)
+          );
+        }
+
+        if (maxPrice !== "") {
+          results = results.filter(
+            (flight) =>
+              parseFloat(flight.price?.amount || 0) <= parseInt(maxPrice)
+          );
+        }
+        setFlightData(results);
       }
     } catch (err) {
       console.error("Flight search error:", err);
@@ -100,8 +116,9 @@ const SearchForm = () => {
       <Typography variant="h5" gutterBottom>
         Flight Search
       </Typography>
-      <FormControl component="fieldset" sx={{ mb: 2, display: "flex" }}>
-        <FormLabel component="legend">Trip type</FormLabel>
+
+      {/* radio group */}
+      <FormControl component="fieldset" sx={{ mt: 2, display: "flex" }}>
         <RadioGroup
           row
           value={tripType}
@@ -119,7 +136,10 @@ const SearchForm = () => {
           />
         </RadioGroup>
       </FormControl>
-      <Grid container spacing={2} mt={2}>
+
+      {/* input fields */}
+      <Grid container spacing={2}>
+        {/* origin */}
         <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <Autocomplete
             sx={{ backgroundColor: "fff", borderRadius: 2 }}
@@ -152,6 +172,7 @@ const SearchForm = () => {
           />
         </Grid>
 
+        {/* destination */}
         <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <Autocomplete
             options={destinationOptions}
@@ -186,6 +207,8 @@ const SearchForm = () => {
             )}
           />
         </Grid>
+
+        {/* departure date */}
         <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <TextField
             sx={{
@@ -203,6 +226,8 @@ const SearchForm = () => {
             onChange={(e) => setDepartureDate(e.target.value)}
           />
         </Grid>
+
+        {/* return date */}
         {tripType === "roundtrip" && (
           <Grid size={{ xs: 12, md: 4, lg: 3 }}>
             <TextField
@@ -222,6 +247,7 @@ const SearchForm = () => {
             />
           </Grid>
         )}
+
         <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <Button
             fullWidth
@@ -238,6 +264,28 @@ const SearchForm = () => {
           >
             Search Flights
           </Button>
+        </Grid>
+
+        <Grid xs={12} md={4}>
+          <TextField
+            fullWidth
+            label="Max Stops"
+            type="number"
+            InputLabelProps={{ shrink: true }}
+            value={maxStops}
+            onChange={(e) => setMaxStops(e.target.value)}
+          />
+        </Grid>
+
+        <Grid xs={12} md={4}>
+          <TextField
+            fullWidth
+            label="Max Price (USD)"
+            type="number"
+            InputLabelProps={{ shrink: true }}
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+          />
         </Grid>
       </Grid>
     </Box>
