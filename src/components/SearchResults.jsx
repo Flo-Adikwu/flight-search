@@ -16,6 +16,8 @@ import {
 import { FlightContext } from "../context/FlightContext";
 import moment from "moment";
 import { getFlightDuration } from "../utils/getFlightDuration";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 const SearchResults = () => {
   const { flightData, loading, error } = useContext(FlightContext);
@@ -24,6 +26,7 @@ const SearchResults = () => {
   const resultsPerPage = 5;
   const flights = useMemo(() => flightData || [], [flightData]);
   const totalPages = Math.ceil(flights.length / resultsPerPage);
+  const [expandedRow, setExpandedRow] = useState(null);
 
   //reset page to 1 when page loads
   useEffect(() => {
@@ -61,6 +64,10 @@ const SearchResults = () => {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
+  };
+
+  const handleToggleDetails = (rowIndex) => {
+    setExpandedRow((prev) => (prev === rowIndex ? null : rowIndex));
   };
 
   if (loading) {
@@ -151,6 +158,7 @@ const SearchResults = () => {
               >
                 Price
               </TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -160,68 +168,123 @@ const SearchResults = () => {
               const arrival = moment(leg.arrival);
               const nextDay = arrival.isAfter(departure, "day") ? " +1" : "";
               return (
-                <TableRow
-                  key={i}
-                  sx={{
-                    "&:hover": {
-                      backgroundColor: "#f9f9f9",
-                    },
-                  }}
-                >
-                  <TableCell>
-                    <Box display="flex" flexDirection="column">
-                      <Typography variant="h5" fontWeight="bold">
-                        {`${departure.format("h:mm A")} – ${arrival.format(
-                          "h:mm A"
-                        )}${nextDay}`}
+                <>
+                  <TableRow
+                    key={i}
+                    onClick={() => handleToggleDetails(i)}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "#f9f9f9",
+                      },
+                    }}
+                  >
+                    <TableCell>
+                      <Box display="flex" flexDirection="column">
+                        <Typography variant="h5" fontWeight="bold">
+                          {`${departure.format("h:mm A")} – ${arrival.format(
+                            "h:mm A"
+                          )}${nextDay}`}
+                        </Typography>
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          gap={1}
+                          mt={0.5}
+                        >
+                          {leg.carriers?.marketing?.length ? (
+                            <Box display="flex" alignItems="center" gap={1}>
+                              <img
+                                src={leg.carriers.marketing[0].logoUrl}
+                                alt={leg.carriers.marketing[0].name}
+                                style={{
+                                  width: 24,
+                                  height: 24,
+                                  objectFit: "contain",
+                                }}
+                              />
+                              <Typography variant="body2" fontWeight={500}>
+                                {leg.carriers.marketing[0].name}
+                              </Typography>
+                            </Box>
+                          ) : (
+                            "N/A"
+                          )}
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box display="flex" flexDirection="column">
+                        <Typography variant="h6">
+                          {getFlightDuration(leg.departure, leg.arrival)}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {`${leg.origin?.id || "N/A"} – ${
+                            leg.destination?.id || "N/A"
+                          }`}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" fontWeight={500}>
+                        {leg.stopCount > 0
+                          ? `${leg.stopCount} stop(s)`
+                          : "Nonstop"}
                       </Typography>
-                      <Box display="flex" alignItems="center" gap={1} mt={0.5}>
-                        {leg.carriers?.marketing?.length ? (
-                          <Box display="flex" alignItems="center" gap={1}>
-                            <img
-                              src={leg.carriers.marketing[0].logoUrl}
-                              alt={leg.carriers.marketing[0].name}
-                              style={{
-                                width: 24,
-                                height: 24,
-                                objectFit: "contain",
-                              }}
-                            />
-                            <Typography variant="body2" fontWeight={500}>
-                              {leg.carriers.marketing[0].name}
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="h6"
+                        fontWeight="bold"
+                        color="primary"
+                      >
+                        {flight.price?.formatted || "N/A"}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      {expandedRow === i ? (
+                        <ExpandLessIcon />
+                      ) : (
+                        <ExpandMoreIcon />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                  {expandedRow === i && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={12}
+                        sx={{ backgroundColor: "#fafafa" }}
+                      >
+                        <Box p={2}>
+                          <Typography variant="subtitle1" gutterBottom>
+                            Flight Details
+                          </Typography>
+                          <img
+                            src={leg.carriers.marketing[0].logoUrl}
+                            style={{
+                              width: 24,
+                              height: 24,
+                              objectFit: "contain",
+                            }}
+                          />
+                          <Typography variant="body2">
+                            Aircraft: {leg.carriers.marketing[0].name || "N/A"}
+                          </Typography>
+                          <Box display="flex">
+                            <Typography variant="body2">
+                              Route: {leg.segments[0].origin.name || "N/A"}
+                              {` ${leg.segments[0].origin.type || "N/A"} to `}
+                            </Typography>
+                            <Typography variant="body2" ml={0.5}>
+                              {leg.segments[0].destination.name || "N/A"}
+                              {` ${leg.segments[0].destination.type || "N/A"}`}
                             </Typography>
                           </Box>
-                        ) : (
-                          "N/A"
-                        )}
-                      </Box>
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box display="flex" flexDirection="column">
-                      <Typography variant="h6">
-                        {getFlightDuration(leg.departure, leg.arrival)}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {`${leg.origin?.id || "N/A"} – ${
-                          leg.destination?.id || "N/A"
-                        }`}
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" fontWeight={500}>
-                      {leg.stopCount > 0
-                        ? `${leg.stopCount} stop(s)`
-                        : "Nonstop"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="h6" fontWeight="bold" color="primary">
-                      {flight.price?.formatted || "N/A"}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </>
               );
             })}
           </TableBody>
