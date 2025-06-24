@@ -20,9 +20,6 @@ const SearchForm = () => {
   const [tripType, setTripType] = useState("oneway");
   const [returnDate, setReturndate] = useState("");
 
-  const [maxStops, setMaxStops] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-
   const [originOptions, setOriginOptions] = useState([]);
   const [destinationOptions, setDestinationOptions] = useState([]);
 
@@ -87,17 +84,6 @@ const SearchForm = () => {
         setFlightData([]); // clear previous results
       } else {
         let results = [...flights];
-        if (maxStops !== "") {
-          results = results.filter(
-            (flight) => flight.legs?.[0]?.stopCount <= parseInt(maxStops, 10)
-          );
-        }
-
-        if (maxPrice !== "") {
-          results = results.filter(
-            (flight) => parseFloat(flight.price?.raw || 0) <= parseInt(maxPrice)
-          );
-        }
         setFlightData(results);
         // localStorage.removeItem("flightData");
       }
@@ -111,10 +97,23 @@ const SearchForm = () => {
   };
 
   return (
-    <Box sx={{ p: 3, backgroundColor: "#f9f9f9", borderRadius: 2, mb: 6 }}>
-      <Typography variant="h5" gutterBottom>
-        Flight Search
-      </Typography>
+    <Box
+      sx={{
+        p: 3,
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        borderRadius: 2,
+        mb: 6,
+        border: "1px solid #bbb",
+      }}
+    >
+      <Box sx={{ position: "relative", zIndex: 2 }}>
+        <Typography variant="h5" gutterBottom>
+          Flight Search
+        </Typography>
+      </Box>
 
       {/* radio group */}
       <FormControl component="fieldset" sx={{ mt: 2, display: "flex" }}>
@@ -151,9 +150,6 @@ const SearchForm = () => {
                 sx={{
                   backgroundColor: "fff",
                   borderRadius: 2,
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 2,
-                  },
                 }}
                 {...params}
                 label="Origin"
@@ -186,9 +182,6 @@ const SearchForm = () => {
                 sx={{
                   backgroundColor: "fff",
                   borderRadius: 2,
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 2,
-                  },
                 }}
                 label="Destination"
                 InputProps={{
@@ -213,9 +206,6 @@ const SearchForm = () => {
             sx={{
               backgroundColor: "fff",
               borderRadius: 2,
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-              },
             }}
             fullWidth
             label="Departure Date"
@@ -233,9 +223,6 @@ const SearchForm = () => {
               sx={{
                 backgroundColor: "fff",
                 borderRadius: 2,
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 2,
-                },
               }}
               fullWidth
               label="Return Date"
@@ -263,28 +250,6 @@ const SearchForm = () => {
           >
             Search Flights
           </Button>
-        </Grid>
-
-        <Grid xs={12} md={4}>
-          <TextField
-            fullWidth
-            label="Max Stops"
-            type="number"
-            InputLabelProps={{ shrink: true }}
-            value={maxStops}
-            onChange={(e) => setMaxStops(e.target.value)}
-          />
-        </Grid>
-
-        <Grid xs={12} md={4}>
-          <TextField
-            fullWidth
-            label="Max Price (USD)"
-            type="number"
-            InputLabelProps={{ shrink: true }}
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-          />
         </Grid>
       </Grid>
     </Box>

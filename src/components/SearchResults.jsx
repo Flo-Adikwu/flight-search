@@ -91,12 +91,14 @@ const SearchResults = () => {
 
   return (
     <>
-      <Typography variant="h4"> All Flights</Typography>
-      <Typography variant="body">
-        Prices include required taxes + fees for 1 adult. Optional charges and
-        bag fees may apply. Passenger assistance info.
-      </Typography>
-      <Box display="flex" justifyContent="flex-end" mb={2}>
+      <Box>
+        <Typography variant="h4"> All Flights</Typography>
+        <Typography variant="body">
+          Prices include required taxes + fees for 1 adult. Optional charges and
+          bag fees may apply. Passenger assistance info.
+        </Typography>
+      </Box>
+      <Box display="flex" justifyContent="flex-end" mt={4}>
         <TextField
           select
           value={sort}
@@ -111,30 +113,42 @@ const SearchResults = () => {
           <option value="stops">Stops (Fewest to Most)</option>
         </TextField>
       </Box>
-
       <TableContainer
         component={Paper}
         elevation={3}
         sx={{
-          mt: 4,
+          border: "1px solid #bbb",
+          mt: 2,
+
           borderRadius: 2,
           boxShadow: "0px 2px 10px rgba(0,0,0,0.1)",
           overflow: "hidden",
+          overflowX: "auto",
+          mx: "auto",
+          width: "100%",
         }}
       >
-        <Table sx={{ minWidth: 650 }}>
+        <Table>
           <TableHead sx={{ background: "#f5f5f5" }}>
             <TableRow>
-              <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
+              <TableCell
+                sx={{ fontWeight: "bold", fontSize: "18px", color: "#333" }}
+              >
                 Airline
               </TableCell>
-              <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
+              <TableCell
+                sx={{ fontWeight: "bold", fontSize: "18px", color: "#333" }}
+              >
                 Duration
               </TableCell>
-              <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
+              <TableCell
+                sx={{ fontWeight: "bold", fontSize: "18px", color: "#333" }}
+              >
                 Stops
               </TableCell>
-              <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
+              <TableCell
+                sx={{ fontWeight: "bold", fontSize: "18px", color: "#333" }}
+              >
                 Price
               </TableCell>
             </TableRow>
@@ -213,13 +227,19 @@ const SearchResults = () => {
           </TableBody>
         </Table>
         {totalPages > 1 && (
-          <Box display="flex" justifyContent="" mt={3}>
+          <Box
+            display="flex"
+            justifyContent="flex-end"
+            // mt={3}
+            sx={{ padding: "20px" }}
+          >
             <Pagination
               count={totalPages}
               page={currentPage}
               onChange={(event, value) => handlePageChange(event, value)}
               variant="outlined"
               color="primary"
+              size="large"
             />
           </Box>
         )}
