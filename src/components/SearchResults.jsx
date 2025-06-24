@@ -11,6 +11,7 @@ import {
   TableBody,
   Paper,
   Pagination,
+  TextField,
 } from "@mui/material";
 import { FlightContext } from "../context/FlightContext";
 import moment from "moment";
@@ -19,6 +20,7 @@ import { getFlightDuration } from "../utils/getFlightDuration";
 const SearchResults = () => {
   const { flightData, loading, error } = useContext(FlightContext);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sort, setSort] = useState("");
   const resultsPerPage = 5;
   const flights = useMemo(() => flightData || [], [flightData]);
   const totalPages = Math.ceil(flights.length / resultsPerPage);
@@ -28,12 +30,34 @@ const SearchResults = () => {
     setCurrentPage(1);
   }, [flightData]);
 
+  const sortedFlights = useMemo(() => {
+    let sorted = [...flights];
+
+    if (sort === "price") {
+      sorted.sort((a, b) => a.price.raw - b.price.raw);
+    } else if (sort === "duration") {
+      sorted.sort((a, b) => {
+        const aDuration = moment(a.legs[0].arrival).diff(
+          moment(a.legs[0].departure)
+        );
+        const bDuration = moment(b.legs[0].arrival).diff(
+          moment(b.legs[0].departure)
+        );
+        return aDuration - bDuration;
+      });
+    } else if (sort === "stops") {
+      sorted.sort((a, b) => a.legs[0].stopCount - b.legs[0].stopCount);
+    }
+
+    return sorted;
+  }, [flights, sort]);
+
   const paginatedFlightList = useMemo(() => {
-    return flights.slice(
+    return sortedFlights.slice(
       (currentPage - 1) * resultsPerPage,
       currentPage * resultsPerPage
     );
-  }, [flights, currentPage]);
+  }, [sortedFlights, currentPage]);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -72,6 +96,22 @@ const SearchResults = () => {
         Prices include required taxes + fees for 1 adult. Optional charges and
         bag fees may apply. Passenger assistance info.
       </Typography>
+      <Box display="flex" justifyContent="flex-end" mb={2}>
+        <TextField
+          select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          SelectProps={{ native: true }}
+          size="small"
+          sx={{ width: 200 }}
+        >
+          <option value="">None</option>
+          <option value="price">Price (Low to High)</option>
+          <option value="duration">Duration (Short to Long)</option>
+          <option value="stops">Stops (Fewest to Most)</option>
+        </TextField>
+      </Box>
+
       <TableContainer
         component={Paper}
         elevation={3}

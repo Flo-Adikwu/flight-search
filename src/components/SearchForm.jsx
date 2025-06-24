@@ -86,21 +86,20 @@ const SearchForm = () => {
         setError("No flights found");
         setFlightData([]); // clear previous results
       } else {
-        let results = flights;
+        let results = [...flights];
         if (maxStops !== "") {
           results = results.filter(
-            (flight) => flight.legs?.[0]?.stopCount <= parseInt(maxStops)
+            (flight) => flight.legs?.[0]?.stopCount <= parseInt(maxStops, 10)
           );
         }
 
         if (maxPrice !== "") {
           results = results.filter(
-            (flight) =>
-              parseFloat(flight.price?.amount || 0) <= parseInt(maxPrice)
+            (flight) => parseFloat(flight.price?.raw || 0) <= parseInt(maxPrice)
           );
         }
         setFlightData(results);
-        localStorage.removeItem("flightData");
+        // localStorage.removeItem("flightData");
       }
     } catch (err) {
       console.error("Flight search error:", err);
