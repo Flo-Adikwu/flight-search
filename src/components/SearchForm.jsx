@@ -136,7 +136,7 @@ const SearchForm = () => {
       </FormControl>
 
       {/* input fields */}
-      <Grid container spacing={2}>
+      <Grid container spacing={2} mt={1.5}>
         {/* origin */}
         <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <Autocomplete

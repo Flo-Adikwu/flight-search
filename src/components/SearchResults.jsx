@@ -198,8 +198,8 @@ const SearchResults = () => {
                                 src={leg.carriers.marketing[0].logoUrl}
                                 alt={leg.carriers.marketing[0].name}
                                 style={{
-                                  width: 24,
-                                  height: 24,
+                                  width: 30,
+                                  height: 30,
                                   objectFit: "contain",
                                 }}
                               />
@@ -261,9 +261,10 @@ const SearchResults = () => {
                           </Typography>
                           <img
                             src={leg.carriers.marketing[0].logoUrl}
+                            alt={leg.carriers.marketing[0].name}
                             style={{
-                              width: 24,
-                              height: 24,
+                              width: 40,
+                              height: 40,
                               objectFit: "contain",
                             }}
                           />
