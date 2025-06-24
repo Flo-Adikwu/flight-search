@@ -7,12 +7,19 @@ import {
   Typography,
   Autocomplete,
   CircularProgress,
+  FormControl,
+  RadioGroup,
+  FormLabel,
+  Radio,
+  FormControlLabel,
 } from "@mui/material";
 import { FlightContext } from "../context/FlightContext";
 import { searchAirport, searchFlights } from "../api/api";
 
 const SearchForm = () => {
   const { setFlightData, setLoading, setError } = useContext(FlightContext);
+  const [tripType, setTripType] = useState("oneway");
+  const [returnDate, setReturndate] = useState("");
 
   const [originOptions, setOriginOptions] = useState([]);
   const [destinationOptions, setDestinationOptions] = useState([]);
@@ -68,6 +75,7 @@ const SearchForm = () => {
         originEntityId: origin.entityId,
         destinationEntityId: destination.entityId,
         date: departureDate,
+        returnDate: tripType === "roundtrip" ? returnDate : null,
       });
 
       console.log("API raw response:", flights);
@@ -77,7 +85,6 @@ const SearchForm = () => {
         setFlightData([]); // clear previous results
       } else {
         setFlightData(flights);
-        localStorage.setItem("flightData", JSON.stringify(flights));
       }
     } catch (err) {
       console.error("Flight search error:", err);
@@ -93,6 +100,25 @@ const SearchForm = () => {
       <Typography variant="h5" gutterBottom>
         Flight Search
       </Typography>
+      <FormControl component="fieldset" sx={{ mb: 2, display: "flex" }}>
+        <FormLabel component="legend">Trip type</FormLabel>
+        <RadioGroup
+          row
+          value={tripType}
+          onChange={(e) => setTripType(e.target.value)}
+        >
+          <FormControlLabel
+            value="oneway"
+            control={<Radio />}
+            label="One-way"
+          />
+          <FormControlLabel
+            value="roundtrip"
+            control={<Radio />}
+            label="Round-trip"
+          />
+        </RadioGroup>
+      </FormControl>
       <Grid container spacing={2} mt={2}>
         <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <Autocomplete
@@ -177,6 +203,25 @@ const SearchForm = () => {
             onChange={(e) => setDepartureDate(e.target.value)}
           />
         </Grid>
+        {tripType === "roundtrip" && (
+          <Grid size={{ xs: 12, md: 4, lg: 3 }}>
+            <TextField
+              sx={{
+                backgroundColor: "fff",
+                borderRadius: 2,
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                },
+              }}
+              fullWidth
+              label="Return Date"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              value={returnDate}
+              onChange={(e) => setReturndate(e.target.value)}
+            />
+          </Grid>
+        )}
         <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <Button
             fullWidth

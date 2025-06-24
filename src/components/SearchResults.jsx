@@ -23,7 +23,6 @@ const SearchResults = () => {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
         <>
-          <Typography> ✈️</Typography>
           <CircularProgress />
         </>
       </Box>

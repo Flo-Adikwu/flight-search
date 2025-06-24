@@ -16,6 +16,7 @@ export const searchFlights = async ({
   originEntityId,
   destinationEntityId,
   date,
+  returnDate
 }) => {
   try {
     const response = await axios.get(
@@ -27,6 +28,7 @@ export const searchFlights = async ({
           originEntityId,
           destinationEntityId,
           date,
+          returnDate,
           cabinClass: "economy",
           adults: "1",
           sortBy: "best",
