@@ -5,6 +5,7 @@ import App from './App';
 import { FlightProvider } from './context/FlightContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 //wrap App in provider
 root.render(
   <FlightProvider>

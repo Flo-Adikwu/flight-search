@@ -38,7 +38,7 @@ const SearchForm = () => {
     }
   };
 
- // Fetch autocomplete options when user types in the "destination" input
+  // Fetch autocomplete options when user types in the "destination" input
   const handleDestinationInputChange = async (event, value) => {
     if (value.length < 2) return;
     setLoadingDestination(true);
@@ -53,57 +53,63 @@ const SearchForm = () => {
   };
 
   const handleSearch = async () => {
-  if (!origin || !destination || !departureDate) {
-    setError("All fields are required");
-    return;
-  }
-
-  setLoading(true);
-  setError(null);
-
-  try {
-    const flights = await searchFlights({
-      originSkyId: origin.skyId,
-      destinationSkyId: destination.skyId,
-      originEntityId: origin.entityId,
-      destinationEntityId: destination.entityId,
-      date: departureDate
-    });
-
-    console.log("API raw response:", flights);
-
-    if (!Array.isArray(flights) || flights.length === 0) {
-      setError("No flights found");
-      setFlightData([]); // clear previous results
-    } else {
-      setFlightData(flights);
+    if (!origin || !destination || !departureDate) {
+      setError("All fields are required");
+      return;
     }
-  } catch (err) {
-    console.error("Flight search error:", err);
-    setError(err.message || "Failed to fetch flights");
-    setFlightData([]);
-  } finally {
-    setLoading(false);
-  }
-};
 
+    setLoading(true);
+    setError(null);
+
+    try {
+      const flights = await searchFlights({
+        originSkyId: origin.skyId,
+        destinationSkyId: destination.skyId,
+        originEntityId: origin.entityId,
+        destinationEntityId: destination.entityId,
+        date: departureDate,
+      });
+
+      console.log("API raw response:", flights);
+
+      if (!Array.isArray(flights) || flights.length === 0) {
+        setError("No flights found");
+        setFlightData([]); // clear previous results
+      } else {
+        setFlightData(flights);
+        localStorage.setItem("flightData", JSON.stringify(flights));
+      }
+    } catch (err) {
+      console.error("Flight search error:", err);
+      setError(err.message || "Failed to fetch flights");
+      setFlightData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <Box sx={{ p: 3 }}>
-        <pre>{JSON.stringify(origin)}</pre>
-        <pre>{JSON.stringify(destination)}</pre>
+    <Box sx={{ p: 3, backgroundColor: "#f9f9f9", borderRadius: 2, mb: 6 }}>
       <Typography variant="h5" gutterBottom>
         Flight Search
       </Typography>
-      <Grid container spacing={2}>
-        <Grid xs={12} md={4}>
+      <Grid container spacing={2} mt={2}>
+        <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <Autocomplete
+            sx={{ backgroundColor: "fff", borderRadius: 2 }}
             options={originOptions}
             loading={loadingOrigin}
             onInputChange={handleOriginInputChange}
             onChange={(event, value) => setOrigin(value)}
             renderInput={(params) => (
               <TextField
+                sx={{
+                  backgroundColor: "fff",
+                  borderRadius: 2,
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                  },
+                }}
                 {...params}
                 label="Origin"
                 InputProps={{
@@ -113,38 +119,56 @@ const SearchForm = () => {
                       {loadingOrigin ? <CircularProgress size={20} /> : null}
                       {params.InputProps.endAdornment}
                     </>
-                  )
+                  ),
                 }}
               />
             )}
           />
         </Grid>
-        
-        <Grid xs={12} md={4}>
+
+        <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <Autocomplete
             options={destinationOptions}
             loading={loadingDestination}
             onInputChange={handleDestinationInputChange}
             onChange={(event, value) => setDestination(value)}
+            sx={{ backgroundColor: "fff", borderRadius: 2 }}
             renderInput={(params) => (
               <TextField
+                fullWidth
                 {...params}
+                sx={{
+                  backgroundColor: "fff",
+                  borderRadius: 2,
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                  },
+                }}
                 label="Destination"
                 InputProps={{
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {loadingDestination ? <CircularProgress size={20} /> : null}
+                      {loadingDestination ? (
+                        <CircularProgress size={20} />
+                      ) : null}
                       {params.InputProps.endAdornment}
                     </>
-                  )
+                  ),
                 }}
               />
             )}
           />
         </Grid>
-        <Grid xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <TextField
+            sx={{
+              backgroundColor: "fff",
+              borderRadius: 2,
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+              },
+            }}
             fullWidth
             label="Departure Date"
             type="date"
@@ -153,8 +177,20 @@ const SearchForm = () => {
             onChange={(e) => setDepartureDate(e.target.value)}
           />
         </Grid>
-        <Grid xs={12}>
-          <Button variant="contained" onClick={handleSearch}>
+        <Grid size={{ xs: 12, md: 4, lg: 3 }}>
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={handleSearch}
+            sx={{
+              textTransform: "inherit",
+              py: 1.5,
+              px: 4,
+              fontWeight: "bold",
+              fontSize: "1rem",
+              borderRadius: 2,
+            }}
+          >
             Search Flights
           </Button>
         </Grid>
