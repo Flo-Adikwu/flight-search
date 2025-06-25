@@ -40,10 +40,9 @@ export const searchFlights = async ({
       }
     );
 
-    console.log("Raw API response:", response.data);
 
     if (response.data.status === false) {
-      throw new Error(response.data.message || "Unknown API error");
+      throw new Error(response.data.message || "Unknown  error");
     }
 
     // Return flights array correctly

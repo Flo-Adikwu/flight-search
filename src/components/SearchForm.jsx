@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -30,6 +30,51 @@ const SearchForm = () => {
   const [loadingOrigin, setLoadingOrigin] = useState(false);
   const [loadingDestination, setLoadingDestination] = useState(false);
 
+  //Initialize fields from localStorage
+  useEffect(() => {
+    const storedTripType = localStorage.getItem("tripType");
+    const storedOrigin = localStorage.getItem("origin");
+    const storedDestination = localStorage.getItem("destination");
+    const storedDepartureDate = localStorage.getItem("departureDate");
+    const storedReturnDate = localStorage.getItem("returnDate");
+
+    if (storedTripType) setTripType(storedTripType);
+    if (storedOrigin) setOrigin(JSON.parse(storedOrigin));
+    if (storedDestination) setDestination(JSON.parse(storedDestination));
+    if (storedDepartureDate) setDepartureDate(storedDepartureDate);
+    if (storedReturnDate) setReturndate(storedReturnDate);
+  }, []);
+
+  // handle Trip type change
+  const handleTripTypeChange = (value) => {
+    setTripType(value);
+    localStorage.setItem("tripType", value);
+  };
+
+  // handle Origin change
+  const handleOriginChange = (value) => {
+    setOrigin(value);
+    localStorage.setItem("origin", JSON.stringify(value));
+  };
+
+  // handle Destination change
+  const handleDestinationChange = (value) => {
+    setDestination(value);
+    localStorage.setItem("destination", JSON.stringify(value));
+  };
+
+  // handle departure Date change
+  const handleDepartureDateChange = (e) => {
+    setDepartureDate(e.target.value);
+    localStorage.setItem("departureDate", e.target.value);
+  };
+
+  // handle return Date change
+  const handleReturnDateChange = (e) => {
+    setReturndate(e.target.value);
+    localStorage.setItem("returnDate", e.target.value);
+  };
+
   // Fetch autocomplete options when user types in the "origin" input
   const handleOriginInputChange = async (event, value) => {
     if (value.length < 2) return;
@@ -58,6 +103,7 @@ const SearchForm = () => {
     }
   };
 
+  //Search function
   const handleSearch = async () => {
     if (!origin || !destination || !departureDate) {
       setError("All fields are required");
@@ -81,11 +127,10 @@ const SearchForm = () => {
 
       if (!Array.isArray(flights) || flights.length === 0) {
         setError("No flights found");
-        setFlightData([]); // clear previous results
+        setFlightData([]);
       } else {
         let results = [...flights];
         setFlightData(results);
-        // localStorage.removeItem("flightData");
       }
     } catch (err) {
       console.error("Flight search error:", err);
@@ -120,7 +165,7 @@ const SearchForm = () => {
         <RadioGroup
           row
           value={tripType}
-          onChange={(e) => setTripType(e.target.value)}
+          onChange={(e) => handleTripTypeChange(e.target.value)}
         >
           <FormControlLabel
             value="oneway"
@@ -140,11 +185,12 @@ const SearchForm = () => {
         {/* origin */}
         <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <Autocomplete
+            value={origin}
             sx={{ backgroundColor: "fff", borderRadius: 2 }}
             options={originOptions}
             loading={loadingOrigin}
             onInputChange={handleOriginInputChange}
-            onChange={(event, value) => setOrigin(value)}
+            onChange={(event, value) => handleOriginChange(value)}
             renderInput={(params) => (
               <TextField
                 sx={{
@@ -170,10 +216,11 @@ const SearchForm = () => {
         {/* destination */}
         <Grid size={{ xs: 12, md: 4, lg: 3 }}>
           <Autocomplete
+            value={destination}
             options={destinationOptions}
             loading={loadingDestination}
             onInputChange={handleDestinationInputChange}
-            onChange={(event, value) => setDestination(value)}
+            onChange={(event, value) => handleDestinationChange(value)}
             sx={{ backgroundColor: "fff", borderRadius: 2 }}
             renderInput={(params) => (
               <TextField
@@ -212,7 +259,7 @@ const SearchForm = () => {
             type="date"
             InputLabelProps={{ shrink: true }}
             value={departureDate}
-            onChange={(e) => setDepartureDate(e.target.value)}
+            onChange={handleDepartureDateChange}
           />
         </Grid>
 
@@ -229,7 +276,7 @@ const SearchForm = () => {
               type="date"
               InputLabelProps={{ shrink: true }}
               value={returnDate}
-              onChange={(e) => setReturndate(e.target.value)}
+              onChange={handleReturnDateChange}
             />
           </Grid>
         )}
